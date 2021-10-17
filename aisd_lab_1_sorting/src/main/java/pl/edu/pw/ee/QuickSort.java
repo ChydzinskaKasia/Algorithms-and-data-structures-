@@ -1,12 +1,13 @@
 package pl.edu.pw.ee;
 
 import pl.edu.pw.ee.services.Sorting;
+import java.util.ArrayList; // dodać bibliotekę
 
 public class QuickSort implements Sorting {
 
     @Override
     public void sort(double[] nums) {
-        if (unsortedVector == null) {
+        if (nums == null) { //zmienione 
             throw new IllegalArgumentException("Nums array cannot be null");
         }
 
@@ -14,8 +15,8 @@ public class QuickSort implements Sorting {
     }
 
     private void quicksort(double[] data) {
-        List<Integer> starts = new ArrayList<>();
-        List<Integer> ends = new ArrayList<>();
+        ArrayList<Integer> starts = new ArrayList<>(); //dodane ARRAY
+        ArrayList<Integer> ends = new ArrayList<>(); // -||-
 
         Integer left = 0;
         Integer right = data.length - 1;

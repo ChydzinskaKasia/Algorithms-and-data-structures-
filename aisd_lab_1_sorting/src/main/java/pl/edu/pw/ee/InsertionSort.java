@@ -6,17 +6,24 @@ public class InsertionSort implements Sorting {
 
     @Override
     public void sort(double[] nums) {
-        int numsLength = nums.length;
+        int i, j;
 
-        for (int i = 1; i < numsLength; i++) {
-            int j = i - 1;
+        for (i = 1; i < nums.length; i++) {
+            double currentElement = nums[i];
+            j = i - 1;
 
-            while (i < numsLength) {
+            while (j >= 0) {
+                double predecessor = nums[j];
+                if (predecessor > currentElement) {
+                    nums[j + 1] = predecessor;
+                    j--;
+                } else {
+                    break;
+                }
 
-            
             }
+            nums[j + 1] = currentElement;
 
         }
     }
-
 }
