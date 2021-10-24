@@ -6,6 +6,10 @@ public class InsertionSort implements Sorting {
 
     @Override
     public void sort(double[] nums) {
+        if (nums == null) {
+            throw new IllegalArgumentException("Nums array cannot be null");
+        }
+
         int i, j;
 
         for (i = 1; i < nums.length; i++) {
@@ -25,5 +29,6 @@ public class InsertionSort implements Sorting {
             nums[j + 1] = currentElement;
 
         }
+    
     }
 }

@@ -6,6 +6,9 @@ public class SelectionSort implements Sorting {
 
     @Override
     public void sort(double[] nums) {
+        if (nums == null) {
+            throw new IllegalArgumentException("Nums array cannot be null");
+        }
 
         for (int i = 0; i < nums.length - 1; i++) {
             int MIN_ID = i;

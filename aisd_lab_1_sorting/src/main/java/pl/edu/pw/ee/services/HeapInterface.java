@@ -1,19 +1,7 @@
-package pl.edu.pw.ee;
-import pl.edu.pw.ee.services.HeapInterface;
+package pl.edu.pw.ee.services;
 
+public interface HeapInterface<T extends Comparable<T>> {
+    public void put(T item); // dodaje element do kopca
 
-public class Heap<T extends Comparable<T>> implements HeapInterface<T> {
-
-    @Override
-    public void put(T item) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public T pop() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    public T pop(); // pobiera element "największy" wg naturalnej kolejności
 }

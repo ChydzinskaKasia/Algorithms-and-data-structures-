@@ -1,10 +1,38 @@
 package pl.edu.pw.ee;
 
+import org.junit.rules.ExpectedException;
+import java.util.*;
 import org.junit.*;
 import pl.edu.pw.ee.services.Sorting;
 
 public class SelectionSortTest {
     Sorting sorting = new SelectionSort();
+
+    @org.junit.Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @org.junit.Test
+    public void Should_ThrowIllegalArgument_When_NullArrInput() throws Exception {
+        double[] nums = null;
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Nums array cannot be null");
+        sorting.sort(nums);
+    }
+
+    @org.junit.Test
+    public void Should_SortedOutput_When_RandomArrayInput() {
+        Random rand = new Random();
+        double[] arrInput = new double[20];
+        for (int i = 0; i < arrInput.length; i++) {
+            arrInput[i] = rand.nextDouble();
+        }
+        double[] copiedArrInput = Arrays.copyOf(arrInput, arrInput.length);
+
+        sorting.sort(arrInput);
+        Arrays.sort(copiedArrInput);
+
+        Assert.assertArrayEquals(copiedArrInput, arrInput, 0);
+    }
 
     @org.junit.Test
 
