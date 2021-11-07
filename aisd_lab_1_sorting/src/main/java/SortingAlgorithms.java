@@ -46,7 +46,7 @@ public class SortingAlgorithms {
                 double[] copiedNums = Arrays.copyOf(nums, nums.length);
 
                 Arrays.sort(copiedNums);
-
+                
                 // odwracanie
 
                 int n = copiedNums.length;

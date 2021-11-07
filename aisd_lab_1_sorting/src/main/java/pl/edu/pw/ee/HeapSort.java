@@ -13,7 +13,7 @@ public class HeapSort implements Sorting {
         for (int i = 0; i < nums.length; i++) {
             numsObject[i] = nums[i];
         }
-        Heap<Double> sortingHeap = new Heap<>(numsObject);
+        Heap<Double> sortingHeap = new Heap<>(numsObject); // rodzic wiekszy od portomka
         for (int i = numsObject.length - 1; i >= 0; i--) {
             nums[i] = sortingHeap.pop();
         }
