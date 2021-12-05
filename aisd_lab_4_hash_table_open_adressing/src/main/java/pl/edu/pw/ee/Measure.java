@@ -10,91 +10,82 @@ import java.util.Scanner;
 public class Measure {
     private static final String[] words = readFile();
     private static final int[] sizes = {
-            512,
-            512 << 1,
-            512 << 2,
-            512 << 3,
-            512 << 4,
-            512 << 5,
-            512 << 6,
-            512 << 7,
-            512 << 8,
-            512 << 9
+            512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144
     };
-    private static final Creator[] creators = prepareCreators();
+    private static final OpenAdressingInterface[] table = tableMeasure();
 
-    private static Creator[] prepareCreators() {
-        return new Creator[] {
-                new Creator() {
+    private static OpenAdressingInterface[] tableMeasure() {
+        return new OpenAdressingInterface[] {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
                         return new HashLinearProbing<>(size);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
                         return new HashDoubleHashing<>(size);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 3, 5);
+                        return new HashQuadraticProbing<>(size, 1, 2);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 5, 7);
+                        return new HashQuadraticProbing<>(size, 3, 4);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 7, 13);
+                        return new HashQuadraticProbing<>(size, 3, 7);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 5, 3);
+                        return new HashQuadraticProbing<>(size, 9, 12);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 7, 5);
+                        return new HashQuadraticProbing<>(size, 5, 15);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 13, 7);
+                        return new HashQuadraticProbing<>(size, 1, 6);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 15, 41);
+                        return new HashQuadraticProbing<>(size, 10, 21);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 97, 97);
+                        return new HashQuadraticProbing<>(size, 15, 7);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 123, 17);
+                        return new HashQuadraticProbing<>(size, 19, 98);
                     }
                 },
-                new Creator() {
+                new OpenAdressingInterface() {
                     @Override
                     public HashTable<String> create(int size) {
-                        return new HashQuadraticProbing<>(size, 1234, 5);
+                        return new HashQuadraticProbing<>(size, 100, 16);
                     }
                 }
         };
@@ -104,11 +95,10 @@ public class Measure {
 
         for (int size : sizes) {
             System.err.print(size + "\n");
-            for (Creator c : creators) {
-                System.err.print(measurePutTime(c, size) + "\n");
-                System.err.print(measureGetTime(c, size) + "\n");
+            for (OpenAdressingInterface elem : table) {
+                System.out.print(measurePutTime(elem, size) + " " + measureGetTime(elem, size) + "\n");
             }
-            System.err.println();
+            System.out.println();
         }
 
     }
@@ -132,7 +122,7 @@ public class Measure {
         return words;
     }
 
-    private static long measurePutTime(Creator creator, int size) {
+    private static long measurePutTime(OpenAdressingInterface creator, int size) {
         long[] timeResultMikro = new long[30];
         for (int t = 0; t < 30; t++) {
             long start = System.nanoTime();
@@ -151,7 +141,7 @@ public class Measure {
         return sum;
     }
 
-    private static long measureGetTime(Creator creator, int size) {
+    private static long measureGetTime(OpenAdressingInterface creator, int size) {
         HashTable<String> hashTable = creator.create(size);
         for (int k = 0; k < 100000; k++) {
             hashTable.put(words[k]);
@@ -174,7 +164,7 @@ public class Measure {
         return sum;
     }
 
-    private interface Creator {
+    private interface OpenAdressingInterface {
         HashTable<String> create(int size);
     }
 }

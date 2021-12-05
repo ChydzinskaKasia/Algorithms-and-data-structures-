@@ -12,10 +12,10 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
     private int size;
     private int nElems;
     private T[] hashElems;
-    private State[] fieldStates;
+    private State[] state;
 
     HashOpenAdressing() {
-        this(2039); // initial size as random prime number
+        this(2039);
     }
 
     @SuppressWarnings("unchecked")
@@ -24,9 +24,9 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
 
         this.size = size;
         this.hashElems = (T[]) new Comparable[this.size];
-        this.fieldStates = new State[this.size];
+        this.state = new State[this.size];
         for (int i = 0; i < size; ++i) {
-            fieldStates[i] = State.EMPTY;
+            state[i] = State.EMPTY;
         }
     }
 
@@ -35,9 +35,32 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         validateInputElem(newElem);
         resizeIfNeeded();
 
-        while (addTo(newElem, hashElems, fieldStates, size)) {
-            resize(size + 3); // podwajanie rozmiaru nie zawsze rozwiązuje problem
+        while (add(newElem, hashElems, state, size)) {
+            resize(size + 3);
         }
+    }
+
+    private boolean add(T newElem, T[] hashElems, State[] state, int size) {
+        int key = newElem.hashCode();
+        int i = 0;
+        int hashId = hashFunc(key, i, size);
+        int counter = 0;
+
+        while (state[hashId] == State.OCCUPIED && !newElem.equals(hashElems[hashId])) {
+            i = (i + 1) % size;
+            hashId = hashFunc(key, i, size);
+            counter++;
+            if (counter > size) {
+                return true;
+            }
+        }
+
+        if (state[hashId] == State.EMPTY) {
+            nElems++;
+        }
+        hashElems[hashId] = newElem;
+        state[hashId] = State.OCCUPIED;
+        return false;
     }
 
     @Override
@@ -49,7 +72,7 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         while (true) {
             i++;
             int hashId = hashFunc(key, i, size);
-            if (fieldStates[hashId] == State.EMPTY) {
+            if (state[hashId] == State.EMPTY) {
                 return null;
             }
             if (elem.equals(hashElems[hashId])) {
@@ -67,12 +90,12 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         while (true) {
             i++;
             int hashId = hashFunc(key, i, size);
-            if (fieldStates[hashId] == State.EMPTY) {
+            if (state[hashId] == State.EMPTY) {
                 throw new NoSuchElementException();
             }
             if (elem.equals(hashElems[hashId])) {
                 hashElems[hashId] = nil;
-                fieldStates[hashId] = State.DELETED;
+                state[hashId] = State.DELETED;
                 return;
             }
         }
@@ -110,45 +133,23 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
 
     @SuppressWarnings("unchecked")
     private void resize(int newSize) {
-        int newNElems = 0;
+        int newElems = 0;
         T[] newHashElems = (T[]) new Comparable[newSize];
-        State[] newFieldStates = new State[newSize];
+        State[] newState = new State[newSize];
         for (int i = 0; i < newSize; ++i) {
-            newFieldStates[i] = State.EMPTY;
+            newState[i] = State.EMPTY;
         }
 
         for (int i = 0; i < size; ++i) {
             if (hashElems[i] != nil) {
-                addTo(hashElems[i], newHashElems, newFieldStates, newSize);
-                newNElems++;
+                add(hashElems[i], newHashElems, newState, newSize);
+                newElems++;
             }
         }
         hashElems = newHashElems;
-        fieldStates = newFieldStates;
+        state = newState;
         size = newSize;
-        nElems = newNElems;
+        nElems = newElems;
     }
 
-    private boolean addTo(T newElem, T[] hashElems, State[] fieldStates, int size) {
-        int key = newElem.hashCode();
-        int i = 0;
-        int hashId = hashFunc(key, i, size);
-        int counter = 0;
-
-        while (fieldStates[hashId] == State.OCCUPIED && !newElem.equals(hashElems[hashId])) {
-            i = (i + 1) % size;
-            hashId = hashFunc(key, i, size);
-            counter++;
-            if (counter > size) {
-                return true; // czasami nie da się znaleźć odpowiedniego miejsca mimo niskiej zajętości tablicy
-            }
-        }
-
-        if (fieldStates[hashId] == State.EMPTY) {
-            nElems++;
-        }
-        hashElems[hashId] = newElem;
-        fieldStates[hashId] = State.OCCUPIED;
-        return false;
-    }
 }

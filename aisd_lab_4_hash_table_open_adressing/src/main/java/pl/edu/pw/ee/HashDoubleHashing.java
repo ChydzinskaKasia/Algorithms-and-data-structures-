@@ -1,7 +1,7 @@
 package pl.edu.pw.ee;
 
 public class HashDoubleHashing<T extends Comparable<T>> extends HashOpenAdressing<T> {
-    
+
     public HashDoubleHashing() {
         super();
     }
@@ -16,18 +16,6 @@ public class HashDoubleHashing<T extends Comparable<T>> extends HashOpenAdressin
 
     @Override
     int hashFunc(int key, int i, int size) {
-        /*
-        int m = getSize();
-
-        int hfun = (key % m + i) % m;
-        int gfun = 1 + key % (m - 3);
-
-        int hash = (hfun + i * gfun) % m;
-
-        hash = hash < 0 ? -hash : hash;
-
-        return hash;
-        */
         return Math.abs((key + i * g(key, size)) % size);
     }
 

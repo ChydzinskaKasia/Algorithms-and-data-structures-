@@ -9,8 +9,10 @@ public class Conflict implements Comparable<Conflict> {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
         Conflict newObject = (Conflict) object;
         return value == newObject.value;
     }
@@ -24,4 +26,5 @@ public class Conflict implements Comparable<Conflict> {
     public int compareTo(Conflict object) {
         return Integer.compare(value, object.value);
     }
+
 }
