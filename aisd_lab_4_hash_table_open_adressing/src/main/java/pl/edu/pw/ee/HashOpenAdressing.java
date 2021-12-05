@@ -1,26 +1,33 @@
 package pl.edu.pw.ee;
 
-import pl.edu.pw.ee.exceptions.NotImplementedException;
 import pl.edu.pw.ee.services.HashTable;
+
+import java.util.NoSuchElementException;
 
 public abstract class HashOpenAdressing<T extends Comparable<T>> implements HashTable<T> {
 
     private final T nil = null;
+    private static final double correctLoadFactor = 0.75;
+
     private int size;
     private int nElems;
     private T[] hashElems;
-    private final double correctLoadFactor;
+    private State[] fieldStates;
 
     HashOpenAdressing() {
         this(2039); // initial size as random prime number
     }
 
+    @SuppressWarnings("unchecked")
     HashOpenAdressing(int size) {
         validateHashInitSize(size);
 
         this.size = size;
         this.hashElems = (T[]) new Comparable[this.size];
-        this.correctLoadFactor = 0.75;
+        this.fieldStates = new State[this.size];
+        for (int i = 0; i < size; ++i) {
+            fieldStates[i] = State.EMPTY;
+        }
     }
 
     @Override
@@ -28,29 +35,47 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         validateInputElem(newElem);
         resizeIfNeeded();
 
-        int key = newElem.hashCode();
-        int i = 0;
-        int hashId = hashFunc(key, i);
-
-        while (hashElems[hashId] != nil) {
-            i = (i + 1) % size;
-            hashId = hashFunc(key, i);
+        while (addTo(newElem, hashElems, fieldStates, size)) {
+            resize(size + 3); // podwajanie rozmiaru nie zawsze rozwiązuje problem
         }
-
-        hashElems[hashId] = newElem;
-        nElems++;
     }
 
     @Override
     public T get(T elem) {
-        // TODO Auto-generated method stub
-        return null;
+        validateInputElem(elem);
+        int key = elem.hashCode();
+        int i = -1;
+
+        while (true) {
+            i++;
+            int hashId = hashFunc(key, i, size);
+            if (fieldStates[hashId] == State.EMPTY) {
+                return null;
+            }
+            if (elem.equals(hashElems[hashId])) {
+                return hashElems[hashId];
+            }
+        }
     }
 
     @Override
     public void delete(T elem) {
-        // TODO Auto-generated method stub
+        validateInputElem(elem);
+        int key = elem.hashCode();
+        int i = -1;
 
+        while (true) {
+            i++;
+            int hashId = hashFunc(key, i, size);
+            if (fieldStates[hashId] == State.EMPTY) {
+                throw new NoSuchElementException();
+            }
+            if (elem.equals(hashElems[hashId])) {
+                hashElems[hashId] = nil;
+                fieldStates[hashId] = State.DELETED;
+                return;
+            }
+        }
     }
 
     private void validateHashInitSize(int initialSize) {
@@ -65,7 +90,7 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         }
     }
 
-    abstract int hashFunc(int key, int i);
+    abstract int hashFunc(int key, int i, int size);
 
     int getSize() {
         return size;
@@ -75,7 +100,7 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         double loadFactor = countLoadFactor();
 
         if (loadFactor >= correctLoadFactor) {
-            doubleResize();
+            resize(size * 2);
         }
     }
 
@@ -83,8 +108,47 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
         return (double) nElems / size;
     }
 
-    private void doubleResize() {
-        this.size *= 2;
-        throw new NotImplementedException("This method is not yet implemented!");
+    @SuppressWarnings("unchecked")
+    private void resize(int newSize) {
+        int newNElems = 0;
+        T[] newHashElems = (T[]) new Comparable[newSize];
+        State[] newFieldStates = new State[newSize];
+        for (int i = 0; i < newSize; ++i) {
+            newFieldStates[i] = State.EMPTY;
+        }
+
+        for (int i = 0; i < size; ++i) {
+            if (hashElems[i] != nil) {
+                addTo(hashElems[i], newHashElems, newFieldStates, newSize);
+                newNElems++;
+            }
+        }
+        hashElems = newHashElems;
+        fieldStates = newFieldStates;
+        size = newSize;
+        nElems = newNElems;
+    }
+
+    private boolean addTo(T newElem, T[] hashElems, State[] fieldStates, int size) {
+        int key = newElem.hashCode();
+        int i = 0;
+        int hashId = hashFunc(key, i, size);
+        int counter = 0;
+
+        while (fieldStates[hashId] == State.OCCUPIED && !newElem.equals(hashElems[hashId])) {
+            i = (i + 1) % size;
+            hashId = hashFunc(key, i, size);
+            counter++;
+            if (counter > size) {
+                return true; // czasami nie da się znaleźć odpowiedniego miejsca mimo niskiej zajętości tablicy
+            }
+        }
+
+        if (fieldStates[hashId] == State.EMPTY) {
+            nElems++;
+        }
+        hashElems[hashId] = newElem;
+        fieldStates[hashId] = State.OCCUPIED;
+        return false;
     }
 }

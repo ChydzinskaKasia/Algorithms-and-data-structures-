@@ -54,4 +54,8 @@ public class Node<K extends Comparable<K>, V> {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    public K getRootKey() {
+        return this.key;
+    }
 }
