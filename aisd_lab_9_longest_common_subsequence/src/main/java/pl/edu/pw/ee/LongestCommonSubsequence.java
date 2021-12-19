@@ -2,49 +2,64 @@ package pl.edu.pw.ee;
 
 class LongestCommonSubsequence {
 
-    private static final int[][] L = null;
-
-    // jeżeli znajdzie nam dwa podciągi o tej samej długości to wyswietlamy jeden z
-    // nich, a nie oba, ani żadnej tabicy etc.
-
-    public LongestCommonSubsequence() {
-    }
+    private int[][] lcsArray;
+    private final String firstStr;
+    private final String secondStr;
 
     public LongestCommonSubsequence(String firstStr, String secondStr) {
 
-        char[] firstStringChar = new char[firstStr.length()];
-
-        for (int i = 0; i < firstStr.length(); i++) {
-            firstStringChar[i] = firstStr.charAt(i);
+        if (firstStr == null || secondStr == null) {
+            throw new IllegalArgumentException("Params cannot be null");
         }
+        this.firstStr = firstStr;
+        this.secondStr = secondStr;
+        buildLcsArray();
 
-        char[] secondStringChar = new char[secondStr.length()];
+    }
 
-        for (int i = 0; i < secondStr.length(); i++) {
-            secondStringChar[i] = secondStr.charAt(i);
+    private void buildLcsArray() {
+        int firstStrLength = firstStr.length();
+        int secondStrLength = secondStr.length();
+        lcsArray = new int[firstStrLength + 1][secondStrLength + 1];
+        for (int i = 0; i < firstStrLength; i++) {
+            for (int j = 0; j < secondStrLength; j++) {
+                if (firstStr.charAt(i) == secondStr.charAt(j)) {
+                    lcsArray[i + 1][j + 1] = 1 + lcsArray[i][j];
+                } else {
+                    lcsArray[i + 1][j + 1] = Math.max(lcsArray[i + 1][j], lcsArray[i][j + 1]);
+                }
+            }
         }
-
-        String[] firstStrArray = new String[] { firstStr };
-        String[] secondStrArray = new String[] { secondStr };
-
-        for (int i = 0; i < firstStrArray.length; i++) {
-
-        }
-
     }
 
     public String findLCS() {
-        // TODO
-        return null;
+        StringBuilder lcs = new StringBuilder();
+        int i = firstStr.length();
+        int j = secondStr.length();
+        while (i > 0 && j > 0) {
+            if (firstStr.charAt(i - 1) == secondStr.charAt(j - 1)) {
+                lcs.append(firstStr.charAt(i - 1));
+                i--;
+                j--;
+            } else if (lcsArray[i - 1][j] > lcsArray[i][j - 1])
+                i--;
+            else
+                j--;
+        }
+        return lcs.reverse().toString();
     }
 
     public void display() {
-        // TODO
-
+        Table table = new Table(lcsArray, firstStr, secondStr);
+        table.display();
     }
 
     public static void main(String[] args) {
-        LongestCommonSubsequence longestCommonSubsequence = new LongestCommonSubsequence("AA", "BB");
+
+        LongestCommonSubsequence longestCommonSubsequence = new LongestCommonSubsequence(
+                "rzeczy_nie_trzeba\n_się_spieskzyć", "często_z_odkrywaniem");
+        longestCommonSubsequence.display();
+        System.out.println(longestCommonSubsequence.findLCS());
     }
 
 }
