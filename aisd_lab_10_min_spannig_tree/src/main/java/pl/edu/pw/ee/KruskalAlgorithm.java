@@ -2,8 +2,6 @@ package pl.edu.pw.ee;
 
 import pl.edu.pw.ee.services.MinSpanningTree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,16 +11,16 @@ public class KruskalAlgorithm implements MinSpanningTree {
     public String findMST(String path) {
         List<Node> graph = new FileReader().fileToGraph(path);
         List<Edge> mst = findMST(graph);
-        return mst.stream().map(Edge::toString).collect(Collectors.joining("|"));
+        return mst.stream().map(Edge->Edge.toString()).collect(Collectors.joining("|"));
     }
 
     public List<Edge> findMST(List<Node> graph) {
-        DisjointSet disjointNodeSet = new DisjointSet(graph);
+        Disjoint disjointNode = new Disjoint(graph);
 
         List<Edge> mst = graph.stream()
                 .flatMap(n -> n.getEdges().stream())
-                .sorted(Comparator.comparing(Edge::getWeight))
-                .filter(disjointNodeSet::tryUnion)
+                .sorted(Comparator.comparing(Edge->Edge.getWeight()))
+                .filter(disjointNode::trySame)
                 .collect(Collectors.toList());
 
         if (mst.size() != graph.size() - 1) {
@@ -31,28 +29,27 @@ public class KruskalAlgorithm implements MinSpanningTree {
         return mst;
     }
 
+    private static class Disjoint {
+        final List<NodeWithParent> disjointNode;
 
-    private static class DisjointSet {
-        final List<NodeWithParent> disjointNodeSet;
-
-        private DisjointSet(List<Node> graph) {
-            disjointNodeSet = graph.stream().map(NodeWithParent::new).collect(Collectors.toList());
+        private Disjoint(List<Node> graph) {
+            disjointNode = graph.stream().map(NodeWithParent::new).collect(Collectors.toList());
         }
 
-        private NodeWithParent find(List<NodeWithParent> disjointNodeSet, Node node) {
-            return disjointNodeSet.stream()
+        private NodeWithParent find(List<NodeWithParent> disjointNode, Node node) {
+            return disjointNode.stream()
                     .filter(nwp -> nwp.node == node)
                     .findFirst()
                     .orElseThrow(AssertionError::new);
         }
 
-        boolean tryUnion(Edge edge) {
-            NodeWithParent parent1 = find(disjointNodeSet, edge.from).findHighestParent();
-            NodeWithParent parent2 = find(disjointNodeSet, edge.to).findHighestParent();
-            if (parent1 == parent2) {
+        boolean trySame(Edge edge) {
+            NodeWithParent frstParent = find(disjointNode, edge.firstElem).highestParent();
+            NodeWithParent secondParent = find(disjointNode, edge.secondElem).highestParent();
+            if (frstParent == secondParent) {
                 return false;
             }
-            parent1.parent = parent2;
+            frstParent.parent = secondParent;
             return true;
         }
 
@@ -64,8 +61,8 @@ public class KruskalAlgorithm implements MinSpanningTree {
                 this.node = node;
             }
 
-            NodeWithParent findHighestParent() {
-                return parent == null ? this : parent.findHighestParent();
+            NodeWithParent highestParent() {
+                return parent == null ? this : parent.highestParent();
             }
         }
     }

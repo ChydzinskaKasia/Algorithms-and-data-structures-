@@ -1,7 +1,7 @@
 package pl.edu.pw.ee;
 
 public class Edge {
-    private final Node firstElem;
+    public final Node firstElem;
     public final Node secondElem;
     public final int cost;
 

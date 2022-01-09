@@ -13,8 +13,7 @@ public class PrimAlgorithm implements MinSpanningTree {
     public String findMST(String path) {
         List<Node> graph = new FileReader().fileToGraph(path);
         List<Edge> mst = findMST(graph);
-        //return mst.stream().map(Edge::toString).collect(Collectors.joining("|"));
-        return mst.stream().map(e -> e.toString()).collect(Collectors.joining("|"));
+        return mst.stream().map(Edge-> Edge.toString()).collect(Collectors.joining("|"));
     }
 
     static List<Edge> findMST(List<Node> graph) {
@@ -28,7 +27,7 @@ public class PrimAlgorithm implements MinSpanningTree {
         updateFetches(remainingNodes, root);
 
         while (!remainingNodes.isEmpty()) {
-            remainingNodes.sort(Comparator.comparing(DisconnectedGraphs::getFetch));
+            remainingNodes.sort(Comparator.comparing(DisconnectedGraphs->DisconnectedGraphs.getFetch()));
             DisconnectedGraphs first = remainingNodes.get(0);
             if (first.fetch == Integer.MAX_VALUE) {
                 throw new IllegalStateException();
@@ -37,7 +36,7 @@ public class PrimAlgorithm implements MinSpanningTree {
             updateFetches(remainingNodes, first);
 
             Node[] nodes = { first.parent.node, first.node };
-            Arrays.sort(nodes, Comparator.comparing(Node::getName));
+            Arrays.sort(nodes, Comparator.comparing(Node->Node.getName()));
 
             mst.add(new Edge(nodes[0], nodes[1], first.fetch - first.parent.fetch));
         }
