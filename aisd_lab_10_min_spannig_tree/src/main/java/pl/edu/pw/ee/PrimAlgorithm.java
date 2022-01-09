@@ -13,64 +13,64 @@ public class PrimAlgorithm implements MinSpanningTree {
     public String findMST(String path) {
         List<Node> graph = new FileReader().fileToGraph(path);
         List<Edge> mst = findMST(graph);
-        return mst.stream().map(Edge::toString).collect(Collectors.joining("|"));
+        //return mst.stream().map(Edge::toString).collect(Collectors.joining("|"));
+        return mst.stream().map(e -> e.toString()).collect(Collectors.joining("|"));
     }
-    
+
     static List<Edge> findMST(List<Node> graph) {
-        List<NodeWithDist> remainingNodes = graph.stream().map(NodeWithDist::new).collect(Collectors.toList());
+        List<DisconnectedGraphs> remainingNodes = graph.stream().map(DisconnectedGraphs::new)
+                .collect(Collectors.toList());
         List<Edge> mst = new ArrayList<>();
 
-        NodeWithDist root = remainingNodes.get(0);
-        root.dist = 0;
+        DisconnectedGraphs root = remainingNodes.get(0);
+        root.fetch = 0;
         remainingNodes.remove(root);
-        updateDistances(remainingNodes, root);
+        updateFetches(remainingNodes, root);
 
         while (!remainingNodes.isEmpty()) {
-            remainingNodes.sort(Comparator.comparing(NodeWithDist::getDist));
-            NodeWithDist first = remainingNodes.get(0);
-            if (first.dist == Integer.MAX_VALUE) {
+            remainingNodes.sort(Comparator.comparing(DisconnectedGraphs::getFetch));
+            DisconnectedGraphs first = remainingNodes.get(0);
+            if (first.fetch == Integer.MAX_VALUE) {
                 throw new IllegalStateException();
             }
             remainingNodes.remove(first);
-            updateDistances(remainingNodes, first);
+            updateFetches(remainingNodes, first);
 
-            Node[] nodes = {first.parent.node, first.node};
+            Node[] nodes = { first.parent.node, first.node };
             Arrays.sort(nodes, Comparator.comparing(Node::getName));
 
-            mst.add(new Edge(nodes[0], nodes[1], first.dist - first.parent.dist));
+            mst.add(new Edge(nodes[0], nodes[1], first.fetch - first.parent.fetch));
         }
         return mst;
     }
 
-    private static void updateDistances(List<NodeWithDist> remainingNodes, NodeWithDist first) {
-        for (Edge e : first.node.edges) {
+    private static void updateFetches(List<DisconnectedGraphs> remainingNodes, DisconnectedGraphs first) {
+        for (Edge edge : first.node.edges) {
             remainingNodes.stream()
-                    .filter(nwd -> nwd.node.name.equals(e.secondElem.name))
+                    .filter(nwd -> nwd.node.name.equals(edge.secondElem.name))
                     .findFirst()
                     .ifPresent(nwd -> {
-                        if (nwd.dist > first.dist + e.cost) {
-                            nwd.dist = first.dist + e.cost;
+                        if (nwd.fetch > first.fetch + edge.cost) {
+                            nwd.fetch = first.fetch + edge.cost;
                             nwd.parent = first;
                         }
                     });
         }
     }
 
-    private static class NodeWithDist {
+    private static class DisconnectedGraphs {
         final Node node;
-        NodeWithDist parent;
-        int dist;
+        DisconnectedGraphs parent;
+        int fetch;
 
-        private NodeWithDist(Node node) {
+        private DisconnectedGraphs(Node node) {
             this.node = node;
-            dist = Integer.MAX_VALUE;
+            fetch = Integer.MAX_VALUE;
         }
 
-        private int getDist() {
-            return dist;
+        private int getFetch() {
+            return fetch;
         }
     }
 
 }
-
-

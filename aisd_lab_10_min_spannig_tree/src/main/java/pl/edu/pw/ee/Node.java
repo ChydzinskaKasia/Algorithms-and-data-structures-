@@ -12,11 +12,15 @@ class Node {
         edges = new ArrayList<>();
     }
 
-    void addEdge(Node to, int weight) {
-        edges.add(new Edge(this, to, weight));
+    void addEdges(Node secondElem, int weight) {
+        edges.add(new Edge(this, secondElem, weight));
     }
 
     public String getName() {
         return name;
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
     }
 }

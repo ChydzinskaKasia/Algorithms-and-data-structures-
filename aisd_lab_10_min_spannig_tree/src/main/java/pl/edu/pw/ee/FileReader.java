@@ -17,19 +17,22 @@ class FileReader {
         try (Scanner scanner = new Scanner(new FileInputStream(path))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                Matcher m = pattern.matcher(line);
-                if (!m.matches()) {
-                    throw new IllegalArgumentException("Niepoprawne dane: " + line);
+                Matcher matcher = pattern.matcher(line);
+                if (!matcher.matches()) {
+                    throw new IllegalArgumentException("Invalid data: " + line);
                 }
 
-                Node node1 = addIfAbsent(list, m.group(1));
-                Node node2 = addIfAbsent(list, m.group(2));
+                Node frstNode = addNode(list, matcher.group(1));
+                Node secNode = addNode(list, matcher.group(2));
 
-                int weight = Integer.parseInt(m.group(3));
-                node1.addEdge(node2, weight);
-                node2.addEdge(node1, weight);
+                if (frstNode.name.equals(secNode.name)) {
+                    throw new AssertionError(); 
+                }
+
+                int weight = Integer.parseInt(matcher.group(3));
+                frstNode.addEdges(secNode, weight);
+                secNode.addEdges(frstNode, weight);
             }
-
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -38,14 +41,14 @@ class FileReader {
         return list;
     }
 
-    private Node addIfAbsent(List<Node> list, String name) {
-        for (Node n : list) {
-            if (n.name.equals(name)) {
-                return n;
+    private Node addNode(List<Node> list, String name) {
+        for (Node node : list) {
+            if (node.name.equals(name)) {
+                return node;
             }
         }
-        Node n = new Node(name);
-        list.add(n);
-        return n;
+        Node node = new Node(name);
+        list.add(node);
+        return node;
     }
 }

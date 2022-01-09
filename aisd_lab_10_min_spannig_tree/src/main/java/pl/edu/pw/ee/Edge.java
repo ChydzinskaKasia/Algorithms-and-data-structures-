@@ -11,8 +11,14 @@ public class Edge {
         this.cost = cost;
     }
 
+    public int getWeight() {
+        return cost;
+    }
+
     @Override
     public String toString() {
-        return firstElem.name + '_' + cost + '_' + secondElem.name;
+        return firstElem.name.compareTo(secondElem.name) < 0
+                ? firstElem.name + '_' + cost + '_' + secondElem.name
+                : secondElem.name + '_' + cost + '_' + firstElem.name;
     }
 }
