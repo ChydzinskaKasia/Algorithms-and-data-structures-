@@ -3,6 +3,7 @@ package pl.edu.pw.ee;
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,12 +59,22 @@ public class DeterministicFiniteAutomatonTextSearch implements PatternSearch {
         int state = 0;
 
         for (int i = 0; i < n; i++) {
-            state = transMap.get(new Key(state, text.charAt(i))); // problem
 
-            if (state == acceptedState) {
-                result = i - acceptedState;
-                break;
+            Key key = new Key(state, text.charAt(i));
+
+            if (!transMap.containsKey(key)) {
+                state = 0;
+
+            } else {
+
+                state = transMap.get(key);
+                if (state == acceptedState) {
+
+                    result = i - acceptedState + 1;
+                    break;
+                }
             }
+
         }
 
         return result;
@@ -73,7 +84,37 @@ public class DeterministicFiniteAutomatonTextSearch implements PatternSearch {
     public int[] findAll(String text) {
         validateInput(text);
 
-        throw new UnsupportedOperationException("Not implemented yet.");
+        int n = text.length();
+        int acceptedState = pattern.length();
+
+        int state = 0;
+        List<Integer> resultsList = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+
+            Key key = new Key(state, text.charAt(i));
+
+            if (!transMap.containsKey(key)) {
+                state = 0;
+
+            } else {
+                state = transMap.get(key);
+                if (state == acceptedState) {
+
+                    int idx = i - acceptedState + 1;
+                    resultsList.add(idx);
+
+                }
+
+            }
+
+        }
+        int[] result = new int[resultsList.size()];
+
+        for (int k = 0; k < result.length; k++) {
+            result[k] = resultsList.get(k);
+        }
+        return result;
     }
 
     private void validateInput(String txt) {
@@ -130,13 +171,6 @@ public class DeterministicFiniteAutomatonTextSearch implements PatternSearch {
         }
 
         return isSuffix;
-    }
-
-    public static void main(String[] args) {
-
-        DeterministicFiniteAutomatonTextSearch deterministicFiniteAutomatonTextSearch = new DeterministicFiniteAutomatonTextSearch("ABCB");
-        deterministicFiniteAutomatonTextSearch.findFirst("DABCBABC");
-        deterministicFiniteAutomatonTextSearch.findAll("DABCBABC");
     }
 
 }
