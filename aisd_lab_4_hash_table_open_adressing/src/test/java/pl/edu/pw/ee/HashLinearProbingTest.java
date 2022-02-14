@@ -105,6 +105,16 @@ public class HashLinearProbingTest {
     }
 
     @Test
+    public void testDeleteWithCollision() {
+        Conflict seven = new Conflict(7);
+        Conflict eight = new Conflict(8);
+        conflictHashTab.put(seven);
+        conflictHashTab.put(eight);
+        conflictHashTab.delete(seven);
+        assertEquals(eight, conflictHashTab.get(eight));
+    }
+
+    @Test
     public void testResize() {
         Random r = new Random();
         int size = hashTableInteger.getSize();

@@ -138,6 +138,17 @@ public class RedBlackTreeTest {
         assertEquals(expectedString, inOrderString);
     }
 
+    
+    @Test
+    public void Should_Return_String_InOrde_Empty() {
+        String expectedString = "";
+        //redBlackTree.put(1, "");
+
+        String inOrderString = redBlackTree.getInOrder();
+
+        assertEquals(expectedString, inOrderString);
+    }
+
     @Test
     public void Should_Return_String_PostOrde() {
         String expectedString = "1:A 3:C 2:B 5:E 7:G 6:F 4:D 9:I 11:K 10:J 13:M 12:L 8:H";

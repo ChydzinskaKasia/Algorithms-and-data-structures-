@@ -96,7 +96,7 @@ public class HashDoubleHashingTest {
     }
 
     @Test
-    public void testConfilct() {
+    public void testConfilct() { 
         Conflict eight = new Conflict(8);
         conflictHashTab.put(new Conflict(7));
         conflictHashTab.put(eight);

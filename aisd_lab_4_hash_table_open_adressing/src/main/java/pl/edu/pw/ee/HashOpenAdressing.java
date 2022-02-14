@@ -83,33 +83,33 @@ public abstract class HashOpenAdressing<T extends Comparable<T>> implements Hash
 
     @Override
     public void delete(T elem) {
-        validateInputElem(elem);
-        int key = elem.hashCode();
+        validateInputElem(elem); 
+        int key = elem.hashCode(); 
         int i = -1;
 
         while (true) {
-            i++;
-            int hashId = hashFunc(key, i, size);
-            if (state[hashId] == State.EMPTY) {
+            i++; 
+            int hashId = hashFunc(key, i, size); 
+            if (state[hashId] == State.EMPTY) { 
                 throw new NoSuchElementException();
             }
-            if (elem.equals(hashElems[hashId])) {
-                hashElems[hashId] = nil;
-                state[hashId] = State.DELETED;
+            if (elem.equals(hashElems[hashId])) { 
+                hashElems[hashId] = nil; 
+                state[hashId] = State.DELETED; 
                 return;
             }
-        }
-    }
-
-    private void validateHashInitSize(int initialSize) {
-        if (initialSize < 1) {
-            throw new IllegalArgumentException("Initial size of hash table cannot be lower than 1!");
         }
     }
 
     private void validateInputElem(T newElem) {
         if (newElem == null) {
             throw new IllegalArgumentException("Input elem cannot be null!");
+        }
+    }
+
+    private void validateHashInitSize(int initialSize) {
+        if (initialSize < 1) {
+            throw new IllegalArgumentException("Initial size of hash table cannot be lower than 1!");
         }
     }
 

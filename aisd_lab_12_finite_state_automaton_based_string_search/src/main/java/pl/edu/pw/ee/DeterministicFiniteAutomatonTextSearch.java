@@ -172,5 +172,6 @@ public class DeterministicFiniteAutomatonTextSearch implements PatternSearch {
 
         return isSuffix;
     }
+    
 
 }

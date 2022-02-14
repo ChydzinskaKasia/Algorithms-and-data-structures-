@@ -165,19 +165,19 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     }
 
     public void deleteMax() {
-        if (root == null) {
+        if (root == null) { 
             throw new IllegalArgumentException("Root cannot be null.");
         }
         root = deleteMax(root);
     }
 
     private Node<K, V> deleteMax(Node<K, V> node) {
-        if (isLeftChildRed(node)) {
-            node = rotateRight(node);
-        }
-        if (node.getRight() == null) {
-            return null;
-        }
+        if (isLeftChildRed(node)) { 
+            node = rotateRight(node); 
+        }                             
+        if (node.getRight() == null) { 
+            return null;               
+        }                              
         if (!isLeftChildRed(node.getRight()) && !isRightChildRed(node)) {
             changeColorsIntoRed(node);
             if (isLeftChildRed(node.getLeft())) {
@@ -215,8 +215,8 @@ public class RedBlackTree<K extends Comparable<K>, V> {
     public String getInOrder() {
         result = new StringBuilder();
         getInOrder(this.root);
-        result.deleteCharAt(result.length() - 1);
-        return result.toString();
+        //result.deleteCharAt(result.length() - 1);
+        return result.toString().trim();
     }
 
     public void getInOrder(Node<K, V> node) {

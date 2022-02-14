@@ -147,11 +147,11 @@ public class DeterministicFiniteAutomatonTextSearchTest {
     @Test
     public void Should_Return_ArrayOf_FirstIndexes_When_Pattern_Exists_AllCharTheSame() {
         dfa = new DeterministicFiniteAutomatonTextSearch(
-                "A");
+                "AAA");
 
-        int[] actuals = dfa.findAll("AAA");
+        int[] actuals = dfa.findAll("AAAAAA");
 
-        int[] expected = { 0, 1, 2 };
+        int[] expected = { 0, 1, 2, 3 };
         assertArrayEquals(expected, actuals);
     }
 
@@ -166,4 +166,14 @@ public class DeterministicFiniteAutomatonTextSearchTest {
         assertArrayEquals(expected, actuals);
     }
 
+    @Test
+    public void Test() {
+        dfa = new DeterministicFiniteAutomatonTextSearch(
+                "BBB");
+
+        int[] actuals = dfa.findAll("BBBBBB");
+
+        int[] expected = {0,1,2,3};
+        assertArrayEquals(expected, actuals);
+    }
 }
